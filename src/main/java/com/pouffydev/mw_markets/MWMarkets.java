@@ -2,8 +2,14 @@ package com.pouffydev.mw_markets;
 
 import com.mojang.logging.LogUtils;
 import com.pouffydev.krystal_core.foundation.KrystalCoreRegistrate;
+import com.pouffydev.krystal_core.foundation.data.lang.KrystalCoreLangMerger;
 import com.pouffydev.mw_markets.content.currency.CurrencyJsonListener;
 import com.pouffydev.mw_markets.content.currency.CurrencyOverlay;
+import com.pouffydev.mw_markets.foundation.MWMLangPartials;
+import com.pouffydev.mw_markets.init.MWMItems;
+import com.pouffydev.mw_markets.init.MWMSpecialRecipes;
+import net.minecraft.data.DataGenerator;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -12,6 +18,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -22,6 +29,8 @@ import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.forge.event.lifecycle.GatherDataEvent;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
@@ -57,15 +66,23 @@ public class MWMarkets
 
         MinecraftForge.EVENT_BUS.register(this);
         registrate.registerEventListeners(eventBus);
-        
+        MWMSpecialRecipes.register(eventBus);
+        MWMItems.register();
         
         forgeEventBus.addListener(this::jsonReading);
-        
+        eventBus.addListener(EventPriority.LOWEST, MWMarkets::gatherData);
         
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MWMarketsClient.onCtorClient(eventBus, forgeEventBus));
     }
     public void jsonReading(AddReloadListenerEvent event) {
         event.addListener(CurrencyJsonListener.instance);
+    }
+    
+    public static void gatherData(@NotNull GatherDataEvent event) {
+        DataGenerator gen = event.getGenerator();
+        if (event.includeClient()) {
+            gen.addProvider(new KrystalCoreLangMerger(gen, ID, "Milkyway Markets", MWMLangPartials.values()));
+        }
     }
     private void setup(final FMLCommonSetupEvent event)
     {
@@ -84,7 +101,10 @@ public class MWMarkets
                 map(m->m.messageSupplier().get()).
                 collect(Collectors.toList()));
     }
-
+    @Contract("_ -> new")
+    public static @NotNull ResourceLocation asResource(String path) {
+        return new ResourceLocation(ID, path);
+    }
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event)
     {

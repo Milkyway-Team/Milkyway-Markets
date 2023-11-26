@@ -2,7 +2,6 @@ package com.pouffydev.mw_markets.content.currency;
 
 import cofh.core.item.InventoryContainerItem;
 import cofh.lib.inventory.SimpleItemInv;
-import cofh.thermal.lib.item.InventoryContainerItemAugmentable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
@@ -25,15 +24,15 @@ public class CurrencyHandler {
                     if (itemStack.getItem() == CurrencyJsonListener.instance.deserializeItem(new ResourceLocation(GsonHelper.getAsString(json, "item")))) {
                         newInventoryValue += json.get("value").getAsInt() * itemStack.getCount();
                     }
-                } else if (itemStack.getItem() instanceof InventoryContainerItem) {
-                    SimpleItemInv containerInventory = ((InventoryContainerItem) itemStack.getItem()).getContainerInventory(itemStack);
-                    for (int i = 0; i < containerInventory.getSlots(); i++) {
-                        ItemStack itemStack1 = containerInventory.getStackInSlot(i);
-                        if (itemStack1.getItem() == CurrencyJsonListener.instance.deserializeItem(new ResourceLocation(GsonHelper.getAsString(json, "item")))) {
-                            newInventoryValue += json.get("value").getAsInt() * itemStack1.getCount();
-                        }
-                    }
-                }
+                }// else if (itemStack.getItem() instanceof InventoryContainerItem) {
+                 //   SimpleItemInv containerInventory = ((InventoryContainerItem) itemStack.getItem()).getContainerInventory(itemStack);
+                 //   for (int i = 0; i < containerInventory.getSlots(); i++) {
+                 //       ItemStack itemStack1 = containerInventory.getStackInSlot(i);
+                 //       if (itemStack1.getItem() == CurrencyJsonListener.instance.deserializeItem(new ResourceLocation(GsonHelper.getAsString(json, "item")))) {
+                 //           newContainerItemValue += json.get("value").getAsInt() * itemStack1.getCount();
+                 //       }
+                 //   }
+                 //}
                 inventoryValue = newInventoryValue;
             }
         }

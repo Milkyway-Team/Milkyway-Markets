@@ -1,6 +1,9 @@
 package com.pouffydev.mw_markets.foundation.mixin.currency;
 
+import com.pouffydev.mw_markets.compat.MarketsMods;
+import com.pouffydev.mw_markets.compat.cofh.CurrencyHandlerCoFH;
 import com.pouffydev.mw_markets.content.currency.CurrencyHandler;
+import com.pouffydev.mw_markets.content.currency.CurrencyUtils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,24 +18,29 @@ public class PlayerMixin {
     }
     
     @Unique
-    private static final String TAG_MONEY = "Money";
+    private static final String TAG_CURRENCY = "Currency";
     @Unique
-    private static final String TAG_INVENTORY_VALUE = "InventoryValue";
+    private static final String TAG_INVENTORY_VALUE = "PlayerValue";
     @Inject(at = @At("TAIL"), method = "tick")
     private void tickMoney(CallbackInfo ci) {
         Player player = (Player) (Object) this;
         CompoundTag compoundTag = player.getPersistentData();
-        
-        int inventoryValue = CurrencyHandler.inventoryValue;
-        
-        if (!compoundTag.contains(TAG_MONEY)) {
-            compoundTag.put(TAG_MONEY, new CompoundTag());
+        int CoFHPlayerValue = 0;
+        if (MarketsMods.COFH_CORE.isLoaded()) {
+            CurrencyHandlerCoFH.updateInventoryValue(player);
+            CoFHPlayerValue = CurrencyHandlerCoFH.coFHInventoryValue;
         }
-        CompoundTag moneyTag = compoundTag.getCompound(TAG_MONEY);
-        if (!moneyTag.contains(TAG_INVENTORY_VALUE)) {
-            moneyTag.putInt(TAG_INVENTORY_VALUE, inventoryValue);
-        }
-        
         CurrencyHandler.updateInventoryValue(player);
+        CurrencyUtils.playerValue = CurrencyHandler.inventoryValue + CoFHPlayerValue;
+        
+        if (!compoundTag.contains(TAG_CURRENCY)) {
+            compoundTag.put(TAG_CURRENCY, new CompoundTag());
+        }
+        CompoundTag moneyTag = compoundTag.getCompound(TAG_CURRENCY);
+        if (!moneyTag.contains(TAG_INVENTORY_VALUE)) {
+            moneyTag.putInt(TAG_INVENTORY_VALUE, CurrencyUtils.playerValue);
+        }
+        
+       
     }
 }

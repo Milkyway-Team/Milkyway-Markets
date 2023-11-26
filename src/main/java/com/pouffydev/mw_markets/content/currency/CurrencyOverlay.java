@@ -2,6 +2,9 @@ package com.pouffydev.mw_markets.content.currency;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.pouffydev.krystal_core.foundation.data.lang.Components;
+import com.pouffydev.mw_markets.compat.MarketsMods;
+import com.pouffydev.mw_markets.compat.cofh.CurrencyHandlerCoFH;
+import com.simibubi.create.CreateClient;
 import com.simibubi.create.content.equipment.armor.RemainingAirOverlay;
 import com.simibubi.create.foundation.gui.element.GuiGameElement;
 import net.minecraft.client.Minecraft;
@@ -22,10 +25,19 @@ public class CurrencyOverlay implements IIngameOverlay {
             return;
         
         LocalPlayer player = mc.player;
+        //If the player has an inventory screen open, don't render the overlay
         
         if (player == null)
             return;
-        int inventoryValue = CurrencyHandler.inventoryValue;
+        
+        
+        int coFHInventoryValue = 0;
+        if (MarketsMods.COFH_CORE.isLoaded()) {
+            coFHInventoryValue = CurrencyHandlerCoFH.coFHInventoryValue;
+        }
+        
+        int inventoryValue = CurrencyHandler.inventoryValue + coFHInventoryValue;
+        
         if (inventoryValue <= 0)
             return;
         

@@ -1,0 +1,15 @@
+{
+
+	"_": "~}+~+~+~+~+~+~+~+~+~+~+~+~{  Game Elements  }~+~+~+~+~+~+~+~+~+~+~+~+{~",
+
+	"item.mw_markets.currency_capsule": "Currency Capsule",
+
+
+	"_": "~}+~+~+~+~+~+~+~+~+~+~+~+~{  Milkyway Market's Item Descriptions  }~+~+~+~+~+~+~+~+~+~+~+~+{~",
+
+	"mw_markets.capsule.value.capacity": "Capacity: %s",
+	"mw_markets.capsule.value": "Value: %s",
+
+	"_": "Thank you for translating Milkyway Markets!"
+
+}
