@@ -1,0 +1,11 @@
+{
+  "required": true,
+  "minVersion": "0.8.2",
+  "package": "com.pouffydev.mw_markets.foundation.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "currency.PlayerMixin"
+  ],
+  "client": [
+  ]
+}
